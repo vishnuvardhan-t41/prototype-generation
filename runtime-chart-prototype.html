@@ -1,0 +1,100 @@
+<div id="obeya-runtime-prototype">
+  <style>
+    #obeya-runtime-prototype { --op-navy:#12375b; --op-ink:#17324d; --op-muted:#6d8194; --op-border:#dce5eb; --op-soft:#f5f8fa; --op-teal:#55b8b1; --op-blue:#2b67ad; --op-gold:#c99742; --op-purple:#8b6bb1; --op-red:#c85b55; font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif; color:var(--op-ink); max-width:980px; margin:0 auto; }
+    #obeya-runtime-prototype *, #obeya-runtime-prototype *:before, #obeya-runtime-prototype *:after { box-sizing:border-box; }
+    .op-window { background:#fff; border:1px solid var(--op-border); border-radius:12px; box-shadow:0 10px 30px rgba(18,55,91,.10); overflow:hidden; }
+    .op-topbar { background:var(--op-navy); color:#fff; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+    .op-brand { font-weight:800; letter-spacing:.08em; font-size:14px; }
+    .op-context { color:#c8d8e5; font-size:12px; }
+    .op-content { padding:24px; }
+    .op-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:18px; margin-bottom:18px; }
+    .op-eyebrow { color:var(--op-teal); text-transform:uppercase; letter-spacing:.12em; font-weight:700; font-size:10px; }
+    .op-heading h2 { margin:4px 0 5px; color:var(--op-navy); font-size:22px; }
+    .op-heading p { margin:0; color:var(--op-muted); font-size:12px; }
+    .op-controls { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .op-picker { position:relative; }
+    .op-button { border:1px solid var(--op-border); background:#fff; color:var(--op-ink); border-radius:7px; padding:9px 11px; font-size:12px; cursor:pointer; }
+    .op-button:hover, .op-button:focus-visible { border-color:var(--op-teal); outline:none; }
+    .op-button.op-primary { background:var(--op-navy); color:#fff; border-color:var(--op-navy); }
+    .op-menu { position:absolute; z-index:5; right:0; top:calc(100% + 6px); width:230px; padding:10px; background:#fff; border:1px solid var(--op-border); border-radius:9px; box-shadow:0 12px 28px rgba(18,55,91,.16); }
+    .op-menu[hidden] { display:none; }
+    .op-menu input { width:100%; padding:8px 9px; border:1px solid var(--op-border); border-radius:6px; font-size:12px; margin-bottom:7px; }
+    .op-option { display:flex; align-items:center; gap:8px; padding:7px 4px; font-size:12px; }
+    .op-option input { width:auto; margin:0; }
+    .op-chart-shell { border:1px solid var(--op-border); border-radius:9px; padding:14px 15px 10px; }
+    .op-chart-meta { display:flex; justify-content:space-between; align-items:center; color:var(--op-muted); font-size:11px; margin-bottom:6px; }
+    .op-chart-meta strong { color:var(--op-ink); font-size:12px; }
+    .op-chart { width:100%; height:auto; display:block; }
+    .op-grid { stroke:#e8eef2; stroke-width:1; }
+    .op-axis { stroke:#b6c5cf; stroke-width:1; }
+    .op-series { fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+    .op-point { stroke:#fff; stroke-width:2; }
+    .op-label { fill:var(--op-muted); font-size:11px; }
+    .op-legend { display:flex; flex-wrap:wrap; gap:9px 17px; margin-top:9px; }
+    .op-legend button { border:0; background:none; padding:0; color:var(--op-muted); font-size:11px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .op-legend button[aria-pressed="false"] { opacity:.35; text-decoration:line-through; }
+    .op-swatch { width:9px; height:9px; border-radius:50%; display:inline-block; }
+    .op-tip { position:absolute; z-index:6; min-width:185px; padding:10px 11px; border:1px solid var(--op-border); border-radius:8px; background:#fff; box-shadow:0 8px 22px rgba(18,55,91,.17); font-size:11px; pointer-events:none; }
+    .op-tip[hidden] { display:none; }
+    .op-tip strong { display:block; color:var(--op-navy); margin-bottom:6px; }
+    .op-tip-row { display:flex; justify-content:space-between; gap:14px; color:var(--op-muted); padding:2px 0; }
+    .op-tip-row span:first-child { display:flex; align-items:center; gap:5px; }
+    .op-tip-row b { color:var(--op-ink); }
+    .op-note { display:flex; gap:8px; align-items:flex-start; background:var(--op-soft); border-radius:7px; padding:9px 10px; color:var(--op-muted); font-size:11px; line-height:1.4; margin-top:12px; }
+    .op-note strong { color:var(--op-ink); }
+    .op-heatmap { margin-top:12px; border:1px solid var(--op-border); border-radius:9px; padding:13px; }
+    .op-heatmap[hidden] { display:none; }
+    .op-heatmap-title { font-size:12px; font-weight:700; color:var(--op-navy); margin-bottom:9px; }
+    .op-heat-grid { display:grid; grid-template-columns:150px repeat(3,1fr); gap:4px; font-size:10px; }
+    .op-heat-grid > div { padding:7px 8px; background:#f1f5f7; }
+    .op-heat-grid .op-heat-head { background:#fff; color:var(--op-muted); font-weight:700; }
+    .op-heat-grid .op-heat-value { text-align:right; color:var(--op-ink); font-weight:700; }
+    @media (max-width:650px) { .op-content{padding:17px 14px}.op-topbar{padding:15px 16px}.op-heading{display:block}.op-controls{justify-content:flex-start;margin-top:14px}.op-chart-shell{padding:10px 8px}.op-label{font-size:9px}.op-heat-grid{grid-template-columns:105px repeat(3,1fr);font-size:9px}.op-heat-grid > div{padding:6px 4px} }
+  </style>
+  <div class="op-window">
+    <div class="op-topbar"><span class="op-brand">OBEYA</span><span class="op-context">Runtime policies · monitoring view</span></div>
+    <main class="op-content">
+      <div class="op-heading">
+        <div><div class="op-eyebrow">Runtime trend</div><h2>Split AC</h2><p>Hours per configured device per day · last 3 completed months</p></div>
+        <div class="op-controls">
+          <div class="op-picker"><button class="op-button" id="op-buildings" type="button" aria-expanded="false">Buildings (5 selected) ▾</button><div class="op-menu" id="op-menu" hidden><input id="op-search" type="search" placeholder="Search buildings…" aria-label="Search buildings"><div id="op-options"></div></div></div>
+          <button class="op-button op-primary" id="op-all" type="button">Show all buildings</button>
+        </div>
+      </div>
+      <div class="op-chart-shell" id="op-chart-wrap"><div class="op-chart-meta"><strong>Selected buildings</strong><span>Click legend items to hide/show</span></div><svg class="op-chart" viewBox="0 0 900 310" role="img" aria-label="Split AC runtime by building"><g id="op-chart-drawing"></g></svg><div class="op-legend" id="op-legend"></div><div class="op-tip" id="op-tip" hidden></div></div>
+      <div class="op-note"><span>ⓘ</span><span><strong>Overlap-aware:</strong> when buildings share the same value, the tooltip lists them together. The chart never offsets real values just to separate lines.</span></div>
+      <div class="op-heatmap" id="op-heatmap" hidden><div class="op-heatmap-title">All buildings · heatmap view</div><div class="op-heat-grid" id="op-heat-grid"></div></div>
+    </main>
+  </div>
+  <script>
+    (() => {
+      const root = document.getElementById('obeya-runtime-prototype');
+      const months = ['Jun 1','Jul 1','Aug 1'];
+      const data = { GUSTO:[0,0,0], SUNSHINE:[0,0,0], HARBOUR:[2.4,3.1,2.8], MEADOWS:[1.6,2.1,2.0], RIDGE:[3.8,3.4,3.9], CENTRAL:[2.8,2.8,2.8], NORTH:[1.1,1.5,1.4], WEST:[2.2,1.9,2.4], EAST:[2.2,1.9,2.4], SOUTH:[1.8,2.5,2.2], ORCHARD:[2.8,2.8,2.8], LAKESIDE:[3.1,2.7,3.3], PARKVIEW:[1.4,1.8,1.7], HILLTOP:[3.4,3.0,3.2], RIVERFRONT:[2.6,2.3,2.9], OAK:[1.9,2.2,2.1], MAPLE:[1.9,2.2,2.1], CEDAR:[2.7,3.0,2.6], PINE:[1.2,1.6,1.5], GARDEN:[2.0,2.4,2.3], SUMMIT:[4.0,3.7,4.1], VALLEY:[2.3,2.6,2.5], MARINA:[3.0,3.2,3.0], WILLOW:[1.5,1.9,1.8], BROOKFIELD:[2.5,2.5,2.5], GREENWAY:[1.7,2.0,1.9], HORIZON:[3.3,3.6,3.5], CREST:[2.1,2.1,2.1], PALM:[2.9,2.4,2.7], SOUTHRIDGE:[3.6,3.1,3.4] };
+      const colors = ['#2b67ad','#55b8b1','#c99742','#8b6bb1','#c85b55'];
+      let selected = ['GUSTO','SUNSHINE','HARBOUR','MEADOWS','RIDGE'];
+      let allMode = false;
+      const menu = root.querySelector('#op-menu'); const options = root.querySelector('#op-options'); const search = root.querySelector('#op-search');
+      root.querySelector('#op-buildings').addEventListener('click', () => { menu.hidden = !menu.hidden; root.querySelector('#op-buildings').setAttribute('aria-expanded', String(!menu.hidden)); if (!menu.hidden) search.focus(); });
+      search.addEventListener('input', renderOptions);
+      function renderOptions(){ options.innerHTML = Object.keys(data).filter(name => name.toLowerCase().includes(search.value.toLowerCase())).map(name => '<label class="op-option"><input type="checkbox" value="'+name+'" '+(selected.includes(name)?'checked':'')+'>'+name+'</label>').join(''); options.querySelectorAll('input').forEach(input => input.addEventListener('change', () => { if (input.checked && selected.length < 5) selected.push(input.value); else if (!input.checked) selected = selected.filter(item => item !== input.value); else input.checked = false; allMode = false; render(); })); }
+      function x(i){ return 62 + i * 388; } function y(v){ return 248 - (v/4.5)*185; }
+      function render(){
+        root.querySelector('#op-buildings').textContent = 'Buildings ('+selected.length+' selected) ▾';
+        const drawing = root.querySelector('#op-chart-drawing'); const visible = selected; let svg = '';
+        [0,1,2,3,4].forEach(v => { svg += '<line class="op-grid" x1="62" y1="'+y(v)+'" x2="838" y2="'+y(v)+'"></line><text class="op-label" x="47" y="'+(y(v)+4)+'" text-anchor="end">'+v+'h</text>'; });
+        svg += '<line class="op-axis" x1="62" y1="248" x2="838" y2="248"></line>';
+        months.forEach((m,i) => svg += '<text class="op-label" x="'+x(i)+'" y="273" text-anchor="middle">'+m+'</text>');
+        visible.forEach((name,si) => { const points=data[name].map((v,i)=>x(i)+','+y(v)).join(' '); const color=colors[si%colors.length]; svg += '<polyline class="op-series" data-name="'+name+'" points="'+points+'" stroke="'+color+'"></polyline>'; data[name].forEach((v,i)=> svg += '<circle class="op-point" data-name="'+name+'" data-index="'+i+'" cx="'+x(i)+'" cy="'+y(v)+'" r="5" fill="'+color+'"></circle>'); });
+        drawing.innerHTML=svg;
+        drawing.querySelectorAll('.op-point').forEach(point => point.addEventListener('mouseenter', event => showTip(event, Number(point.dataset.index))));
+        root.querySelector('#op-legend').innerHTML = visible.map((name,si)=>'<button type="button" aria-pressed="true" data-name="'+name+'"><i class="op-swatch" style="background:'+colors[si%colors.length]+'"></i>'+name+'</button>').join(''); root.querySelectorAll('#op-legend button').forEach(btn=>btn.addEventListener('click',()=>{btn.setAttribute('aria-pressed',btn.getAttribute('aria-pressed')!=='true'); const name=btn.dataset.name; root.querySelectorAll('[data-name="'+name+'"].op-series,[data-name="'+name+'"].op-point').forEach(el=>el.style.display=btn.getAttribute('aria-pressed')==='true'?'':'none');}));
+        const heat=root.querySelector('#op-heatmap'); heat.hidden=!allMode; if(allMode){ root.querySelector('#op-heat-grid').innerHTML='<div class="op-heat-head">Building</div>'+months.map(m=>'<div class="op-heat-head">'+m+'</div>').join('')+Object.entries(data).map(([name,values])=>'<div>'+name+'</div>'+values.map(v=>'<div class="op-heat-value" style="background:rgba(85,184,177,'+(0.12+v/4.5*.7)+')">'+v.toFixed(1)+'h</div>').join('')).join(''); }
+      }
+      function showTip(event,index){ const grouped={}; Object.keys(data).forEach(name=>{ const value=data[name][index].toFixed(1)+'h'; (grouped[value] ||= []).push(name); }); const chosen=selected.filter(name=>data[name][index] !== undefined); root.querySelector('#op-tip').innerHTML='<strong>'+months[index]+'</strong>'+Object.entries(grouped).filter(([value,names])=>names.some(n=>chosen.includes(n))).map(([value,names])=>'<div class="op-tip-row"><span>'+names.filter(n=>chosen.includes(n)).join(', ')+'</span><b>'+value+'</b></div>').join(''); const rect=root.querySelector('#op-chart-wrap').getBoundingClientRect(); root.querySelector('#op-tip').style.left=Math.min(event.clientX-rect.left+10,rect.width-210)+'px'; root.querySelector('#op-tip').style.top=Math.max(30,event.clientY-rect.top-95)+'px'; root.querySelector('#op-tip').hidden=false; }
+      root.querySelector('#op-chart-wrap').addEventListener('mouseleave',()=>root.querySelector('#op-tip').hidden=true);
+      root.querySelector('#op-all').addEventListener('click',()=>{ allMode=!allMode; root.querySelector('#op-all').textContent=allMode?'Show selected buildings':'Show all buildings'; render(); });
+      renderOptions(); render();
+    })();
+  </script>
+</div>
